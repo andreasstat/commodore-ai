@@ -225,7 +225,7 @@ export class Camera {
 
       let y_axis_distance = y_axis[0] - y_axis[3]
       let x_axis_distance = x_axis[0] - x_axis[3]
-      let distance = (y_axis_distance ** 2) + ( x_axis_distance ** 2)
+      let euclidean_distance = (y_axis_distance ** 2) + ( x_axis_distance ** 2)
       
       if (pinky){
         if ( x_axis_distance > 20) {
@@ -234,7 +234,7 @@ export class Camera {
         } else if (y_axis_distance > 20 ){
           // console.log('open y')
           return true
-        } else if (distance > 800 && distance !== Infinity) {
+        } else if (euclidean_distance > 800 && euclidean_distance !== Infinity) {
           return true
           // console.log(distance, x_axis_distance, y_axis_distance)
           // console.log('open diagonia')
@@ -246,7 +246,7 @@ export class Camera {
         } else if (y_axis_distance > 75 ){
           // console.log('open y')
           return true
-        } else if (distance > 3750 && distance !== Infinity) {
+        } else if (euclidean_distance > 3750 && euclidean_distance !== Infinity) {
           return true
           // console.log(distance, x_axis_distance, y_axis_distance)
           // console.log('open diagonia')
