@@ -167,6 +167,38 @@ export class Camera {
    * @param ctxt Scatter GL context to render 3D keypoints to.
    */
   drawResult(hand, ctxt) {
+    // console.log(hand.keypoints)
+
+    let thumb = []
+    let index_finger = []
+    let middle_finger = []
+    let ring_finger = []
+    let pinky = []
+
+    for(var i in hand.keypoints){
+      if (hand.keypoints[i].name.includes('thumb')) {
+        thumb.push([hand.keypoints[i].x, hand.keypoints[i].y])        
+      } else if (hand.keypoints[i].name.includes('index')) {
+        index_finger.push([hand.keypoints[i].x, hand.keypoints[i].y])    
+      } else if (hand.keypoints[i].name.includes('middle')) {
+        middle_finger.push([hand.keypoints[i].x, hand.keypoints[i].y])    
+      } else if (hand.keypoints[i].name.includes('ring')) {
+        ring_finger.push([hand.keypoints[i].x, hand.keypoints[i].y])    
+      } else if (hand.keypoints[i].name.includes('pinky')) {
+        pinky.push([hand.keypoints[i].x, hand.keypoints[i].y])    
+      }
+      
+      // console.log(thumb)
+      let THUMB =  (this.finger_open(thumb, false) ? 1 : 0);
+      let INDEX = (this.finger_open(index_finger, false) ? 1 : 0);
+      let MIDDLE = (this.finger_open(middle_finger, false) ? 1 : 0);
+      let RING = (this.finger_open(ring_finger, false) ? 1 : 0);
+      let PINKY = (this.finger_open(pinky, true) ? 1 : 0);
+      let sum = THUMB + INDEX + MIDDLE + RING + PINKY;
+      document.getElementById('fingers').innerHTML = 'Fingers: ' + sum;
+      // console.log(THUMB + INDEX + MIDDLE + RING + PINKY)
+    }
+
     if (hand.keypoints != null) {
       this.drawKeypoints(hand.keypoints, hand.handedness);
     }
@@ -181,6 +213,54 @@ export class Camera {
       this.drawKeypoints3D([], '', ctxt);
     }
   }
+
+    finger_open(positions, pinky) {
+      let x_axis = []
+      let y_axis = []
+
+      for(let i in positions){
+        x_axis.push(positions[i][0])
+        y_axis.push(positions[i][1])
+      }
+
+      let y_axis_distance = y_axis[0] - y_axis[3]
+      let x_axis_distance = x_axis[0] - x_axis[3]
+      let distance = (y_axis_distance ** 2) + ( x_axis_distance ** 2)
+      
+      if (pinky){
+        if ( x_axis_distance > 20) {
+          // console.log('open x', distance)
+          return true
+        } else if (y_axis_distance > 20 ){
+          // console.log('open y')
+          return true
+        } else if (distance > 800 && distance !== Infinity) {
+          return true
+          // console.log(distance, x_axis_distance, y_axis_distance)
+          // console.log('open diagonia')
+        }
+      } else {
+        if ( x_axis_distance > 75) {
+          // console.log('open x', distance)
+          return true
+        } else if (y_axis_distance > 75 ){
+          // console.log('open y')
+          return true
+        } else if (distance > 3750 && distance !== Infinity) {
+          return true
+          // console.log(distance, x_axis_distance, y_axis_distance)
+          // console.log('open diagonia')
+        }
+      }
+      return false
+      
+      // console.log(x_axis, y_axis)
+      // console.log(Math.max(x_axis), Math.min(x_axis))
+      // console.log(Math.max(y_axis) - Math.min(y_axis))
+      // console.log(Math.max.apply(Math, y_axis) - Math.min.apply(Math, y_axis));
+
+      // return true
+    }
 
   /**
    * Draw the keypoints on the video.
